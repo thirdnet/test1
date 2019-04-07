@@ -22,7 +22,7 @@ limitations under the License.
     <meta name="description" content="Sample illustrating the use of Image Capture / Update Camera Zoom.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     
-    <title>Image Capture / Update Camera Zoom Sample</title>
+    <title>test camera</title>
     <script>
       // Add a global error event listener early on in the page load, to help ensure that browsers
       // which don't support specific functionality still end up displaying a meaningful message.
@@ -131,7 +131,7 @@ navigator.mediaDevices.getUserMedia({video: true})
   const settings = track.getSettings();
 
   //const input = document.querySelector('input[type="range"]');
-  const input = document.querySelector('#rangezoom');
+  const input = document.getElementById('rangezoom');
 
   // Check whether zoom is supported or not.
   if (!('zoom' in capabilities)) {
@@ -160,7 +160,7 @@ function sleep(ms = 0) {
 <script>
 //resolution
 //const input = document.querySelector('input[type="range"]');
-const input = document.querySelector('#rangeres');
+const input = document.getElementById('rangeres');
 
 var imageCapture;
 
