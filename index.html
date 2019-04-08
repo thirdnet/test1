@@ -46,21 +46,16 @@ limitations under the License.
 
   <body>
     
-    <h1>Image Capture / Update Camera Zoom Sample</h1>
+    <h1>Camera Sample</h1>
     <h3>Background</h3>
-<p>The ImageCapture Web API allows web developers to change the zoom setting of
-the camera.</p>
+<p>camera sample</p>
 
 <video autoplay></video>
-<input type="range" id="rangezoom" hidden>
-
-
+<!--<input type="range" id="rangezoom" hidden>-->
+<input type="range" id="rangezoom">
 <input type="range" id="rangeres">
 <button id="takePhotoButton" disabled>Take Photo</button>
 <canvas></canvas>
-
-
-
 
 <script>
   var ChromeSamples = {
@@ -156,7 +151,7 @@ function sleep(ms = 0) {
 }
 //resolution
 //const input = document.querySelector('input[type="range"]');
-const input = document.getElementById('rangeres');
+const inputrange = document.getElementById('rangeres');
 
 var imageCapture;
 
@@ -172,19 +167,19 @@ var imageCapture;
 .then(photoCapabilities => {
   const settings = imageCapture.track.getSettings();
 
-  input.min = photoCapabilities.imageWidth.min;
-  input.max = photoCapabilities.imageWidth.max;
-  input.step = photoCapabilities.imageWidth.step;
+  inputrange.min = photoCapabilities.imageWidth.min;
+  inputrange.max = photoCapabilities.imageWidth.max;
+  inputrange.step = photoCapabilities.imageWidth.step;
 
   return imageCapture.getPhotoSettings();
 })
 .then(photoSettings => {
-  input.value = photoSettings.imageWidth;
+  inputrange.value = photoSettings.imageWidth;
 })
 .catch(error => ChromeSamples.log('Argh!', error.name || error));
 
 function onTakePhotoButtonClick() {
-  imageCapture.takePhoto({imageWidth: input.value})
+  imageCapture.takePhoto({imageWidth: inputrange.value})
   .then(blob => createImageBitmap(blob))
   .then(imageBitmap => {
     drawCanvas(imageBitmap);
