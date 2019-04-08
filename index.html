@@ -109,102 +109,106 @@ limitations under the License.
   
     
 <script>
-// zoom
-navigator.mediaDevices.getUserMedia({video: true})
-.then(async mediaStream => {
-  document.querySelector('video').srcObject = mediaStream;
-
-  // Once crbug.com/711524 is fixed, we won't need to wait anymore. This is
-  // currently needed because capabilities can only be retrieved after the
-  // device starts streaming. This happens after and asynchronously w.r.t.
-  // getUserMedia() returns.
-  await sleep(1000);
-
-  const track = mediaStream.getVideoTracks()[0];
-  const capabilities = track.getCapabilities();
-  const settings = track.getSettings();
-
-  //const input = document.querySelector('input[type="range"]');
-  const input = document.getElementById('rangezoom');
-
-  // Check whether zoom is supported or not.
-  if (!('zoom' in capabilities)) {
-    return Promise.reject('Zoom is not supported by ' + track.label);
-  }
-
-  // Map zoom to a slider element.
-  input.min = capabilities.zoom.min;
-  input.max = capabilities.zoom.max;
-  input.step = capabilities.zoom.step;
-  input.value = settings.zoom;
-  input.oninput = function(event) {
-    track.applyConstraints({advanced: [ {zoom: event.target.value} ]});
-  }
-  input.hidden = false;
-})
-.catch(error => ChromeSamples.log('Argh!', error.name || error));
-
-/* Utils */
-
-function sleep(ms = 0) {
-  return new Promise(r => setTimeout(r, ms));
-}
-////resolution
-////const input = document.querySelector('input[type="range"]');
-//const inputrange = document.getElementById('rangeres');
+//// zoom
+//navigator.mediaDevices.getUserMedia({video: true})
+//.then(async mediaStream => {
+//  document.querySelector('video').srcObject = mediaStream;
 //
-//var imageCapture;
+//  // Once crbug.com/711524 is fixed, we won't need to wait anymore. This is
+//  // currently needed because capabilities can only be retrieved after the
+//  // device starts streaming. This happens after and asynchronously w.r.t.
+//  // getUserMedia() returns.
+//  await sleep(1000);
 //
-////navigator.mediaDevices.getUserMedia({video: true})
-////.then(mediaStream => {
-////  document.querySelector('video').srcObject = mediaStream;
-////
-////  const track = mediaStream.getVideoTracks()[0];
-//  imageCapture = new ImageCapture(track);
+//  const track = mediaStream.getVideoTracks()[0];
+//  const capabilities = track.getCapabilities();
+//  const settings = track.getSettings();
 //
-//  return imageCapture.getPhotoCapabilities();
-//})
-//.then(photoCapabilities => {
-//  const settings = imageCapture.track.getSettings();
+//  //const input = document.querySelector('input[type="range"]');
+//  const input = document.getElementById('rangezoom');
 //
-//  inputrange.min = photoCapabilities.imageWidth.min;
-//  inputrange.max = photoCapabilities.imageWidth.max;
-//  inputrange.step = photoCapabilities.imageWidth.step;
+//  // Check whether zoom is supported or not.
+//  if (!('zoom' in capabilities)) {
+//    return Promise.reject('Zoom is not supported by ' + track.label);
+//  }
 //
-//  return imageCapture.getPhotoSettings();
-//})
-//.then(photoSettings => {
-//  inputrange.value = photoSettings.imageWidth;
+//  // Map zoom to a slider element.
+//  input.min = capabilities.zoom.min;
+//  input.max = capabilities.zoom.max;
+//  input.step = capabilities.zoom.step;
+//  input.value = settings.zoom;
+//  input.oninput = function(event) {
+//    track.applyConstraints({advanced: [ {zoom: event.target.value} ]});
+//  }
+//  input.hidden = false;
 //})
 //.catch(error => ChromeSamples.log('Argh!', error.name || error));
 //
-//function onTakePhotoButtonClick() {
-//  imageCapture.takePhoto({imageWidth: inputrange.value})
-//  .then(blob => createImageBitmap(blob))
-//  .then(imageBitmap => {
-//    drawCanvas(imageBitmap);
-//    ChromeSamples.log(`Photo size is ${imageBitmap.width}x${imageBitmap.height}`);
-//  })
-//  .catch(error => ChromeSamples.log(error));
-//}
-//
-//document.querySelector('video').addEventListener('play', function() {
-//  document.querySelector('#takePhotoButton').disabled = false;
-//});
-//
 ///* Utils */
 //
-//function drawCanvas(img) {
-//  const canvas = document.querySelector('canvas');
-//  canvas.width = getComputedStyle(canvas).width.split('px')[0];
-//  canvas.height = getComputedStyle(canvas).height.split('px')[0];
-//  let ratio  = Math.min(canvas.width / img.width, canvas.height / img.height);
-//  let x = (canvas.width - img.width * ratio) / 2;
-//  let y = (canvas.height - img.height * ratio) / 2;
-//  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-//  canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height,
-//      x, y, img.width * ratio, img.height * ratio);
+//function sleep(ms = 0) {
+//  return new Promise(r => setTimeout(r, ms));
 //}
+//    
+    
+    
+    
+//resolution
+//const input = document.querySelector('input[type="range"]');
+const inputrange = document.getElementById('rangeres');
+
+var imageCapture;
+
+//navigator.mediaDevices.getUserMedia({video: true})
+//.then(mediaStream => {
+//  document.querySelector('video').srcObject = mediaStream;
+//
+//  const track = mediaStream.getVideoTracks()[0];
+  imageCapture = new ImageCapture(track);
+
+  return imageCapture.getPhotoCapabilities();
+})
+.then(photoCapabilities => {
+  const settings = imageCapture.track.getSettings();
+
+  inputrange.min = photoCapabilities.imageWidth.min;
+  inputrange.max = photoCapabilities.imageWidth.max;
+  inputrange.step = photoCapabilities.imageWidth.step;
+
+  return imageCapture.getPhotoSettings();
+})
+.then(photoSettings => {
+  inputrange.value = photoSettings.imageWidth;
+})
+.catch(error => ChromeSamples.log('Argh!', error.name || error));
+
+function onTakePhotoButtonClick() {
+  imageCapture.takePhoto({imageWidth: inputrange.value})
+  .then(blob => createImageBitmap(blob))
+  .then(imageBitmap => {
+    drawCanvas(imageBitmap);
+    ChromeSamples.log(`Photo size is ${imageBitmap.width}x${imageBitmap.height}`);
+  })
+  .catch(error => ChromeSamples.log(error));
+}
+
+document.querySelector('video').addEventListener('play', function() {
+  document.querySelector('#takePhotoButton').disabled = false;
+});
+
+/* Utils */
+
+function drawCanvas(img) {
+  const canvas = document.querySelector('canvas');
+  canvas.width = getComputedStyle(canvas).width.split('px')[0];
+  canvas.height = getComputedStyle(canvas).height.split('px')[0];
+  let ratio  = Math.min(canvas.width / img.width, canvas.height / img.height);
+  let x = (canvas.width - img.width * ratio) / 2;
+  let y = (canvas.height - img.height * ratio) / 2;
+  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+  canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height,
+      x, y, img.width * ratio, img.height * ratio);
+}
 
 </script>
   </body>
