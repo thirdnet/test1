@@ -33,6 +33,9 @@
     function gotMedia(mediaStream) {
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia start' + '</div>';
         document.querySelector('video').srcObject = mediaStream;
+        // crbug.com/711524
+        await new Promise(r => setTimeout(r, 1000);
+
         const mediaStreamTrack = mediaStream.getVideoTracks()[0];
         
         const capabilities = mediaStreamTrack.getCapabilities();
