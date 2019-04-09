@@ -38,11 +38,13 @@
         const capabilities = mediaStreamTrack.getCapabilities();
         const settings = mediaStreamTrack.getSettings();
         if (capabilities.zoom) {
-            document.querySelector('#output').innerHTML += '<div>' + 'capabilities.zoom:' + capabilities.zoom + '</div>';
+            document.querySelector('#output').innerHTML += '<div>' + 'capabilities.zoom??:' + capabilities.zoom + '</div>';
         }
+        document.querySelector('#output').innerHTML += '<div>' + 'capabilities.zoom:' + capabilities.zoom + '</div>';
         document.querySelector('#output').innerHTML += '<div>' + 'capabilities.brightness:' + capabilities.brightness + '</div>';
-         
-        
+        document.querySelector('#output').innerHTML += '<div>' + 'capabilities.contrast:' + capabilities.contrast + '</div>';
+        document.querySelector('#output').innerHTML += '<div>' + 'capabilities.torch:' + capabilities.torch + '</div>';
+
         imageCapture = new ImageCapture(mediaStreamTrack);
         console.log(imageCapture);
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia end' + '</div>';
