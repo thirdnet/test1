@@ -27,14 +27,15 @@
     
     var imageCapture;
     navigator.mediaDevices.getUserMedia({video: true})
-      .then(gotMedia)
+      .then(async gotMedia)
       .catch(error => console.error('getUserMedia() error:', error));
 
     function gotMedia(mediaStream) {
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia start' + '</div>';
         document.querySelector('video').srcObject = mediaStream;
         // crbug.com/711524
-        await new Promise(r => setTimeout(r, 1000);
+        //await new Promise(r => setTimeout(r, 1000);
+        await sleep(1000);
 
         const mediaStreamTrack = mediaStream.getVideoTracks()[0];
         
@@ -69,7 +70,9 @@
     }
 
 /* Utils */
-
+    function sleep(ms = 0) {
+        return new Promise(r => setTimeout(r, ms));
+    }
     function drawCanvas(canvas, img) {
         canvas.width = getComputedStyle(canvas).width.split('px')[0];
         canvas.height = getComputedStyle(canvas).height.split('px')[0];
