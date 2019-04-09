@@ -25,33 +25,48 @@
 //    };
     document.querySelector('#output').innerHTML += '<div>' + 'start.' + '</div>';
 
+
     navigator.mediaDevices.getUserMedia({video: true})
-    .then(async mediaStream => {
-      document.querySelector('video').srcObject = mediaStream;
+      .then(gotMedia)
+      .catch(error => console.error('getUserMedia() error:', error));
 
-      // Once crbug.com/711524 is fixed, we won't need to wait anymore. This is
-      // currently needed because capabilities can only be retrieved after the
-      // device starts streaming. This happens after and asynchronously w.r.t.
-      // getUserMedia() returns.
-      await sleep(1000);
-
-      const track = mediaStream.getVideoTracks()[0];
-      const capabilities = track.getCapabilities();
-      const settings = track.getSettings();
-        
-      document.querySelector('#output').textContent += '<div>' + 'getCapabilities.' + '</div>';
-      //const input = document.querySelector('input[type="range"]');
-      const input = document.getElementById('rangezoom');
-
-      // Check whether zoom is supported or not.
-      if (!('zoom' in capabilities)) {
-          document.querySelector('#output').textContent += '<div>' + 'Zoom is not supported.' + track.label + '</div>';
-//          return Promise.reject('Zoom is not supported by ' + track.label);
-      }else{
-          document.querySelector('#output').textContent += '<div>' + 'Zoom is supported.' + track.label + '</div>';
-      }
-        
-    })
+    function gotMedia(mediaStream) {
+        document.querySelector('#output').innerHTML += '<div>' + 'gotMedia start' + '</div>';
+        const mediaStreamTrack = mediaStream.getVideoTracks()[0];
+        const imageCapture = new ImageCapture(mediaStreamTrack);
+        console.log(imageCapture);
+        document.querySelector('#output').innerHTML += '<div>' + 'gotMedia end' + '</div>';
+    }
+    
+    
+    
+//    navigator.mediaDevices.getUserMedia({video: true})
+//    .then(async mediaStream => {
+//      document.querySelector('video').srcObject = mediaStream;
+//
+//      // Once crbug.com/711524 is fixed, we won't need to wait anymore. This is
+//      // currently needed because capabilities can only be retrieved after the
+//      // device starts streaming. This happens after and asynchronously w.r.t.
+//      // getUserMedia() returns.
+//      await sleep(1000);
+//
+//      const track = mediaStream.getVideoTracks()[0];
+//      const capabilities = track.getCapabilities();
+//      const settings = track.getSettings();
+//        
+//      document.querySelector('#output').innerHTML += '<div>' + 'getCapabilities.' + '</div>';
+//      //const input = document.querySelector('input[type="range"]');
+//      const input = document.getElementById('rangezoom');
+//
+//      // Check whether zoom is supported or not.
+//      if (!('zoom' in capabilities)) {
+//          document.querySelector('#output').innerHTML += '<div>' + 'Zoom is not supported.' + track.label + '</div>';
+////          return Promise.reject('Zoom is not supported by ' + track.label);
+//      }else{
+//          document.querySelector('#output').innerHTML += '<div>' + 'Zoom is supported.' + track.label + '</div>';
+//      }
+//        
+//    })
     
     
     //var str = document.querySelector('#output').textContent;
