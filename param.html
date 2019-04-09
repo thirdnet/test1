@@ -16,8 +16,6 @@
         </div>
         
         <h3>Output</h3>
-
-        
         <div id="output"></div>
 
         
@@ -34,6 +32,7 @@
 
     function gotMedia(mediaStream) {
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia start' + '</div>';
+        document.querySelector('video').srcObject = mediaStream;
         const mediaStreamTrack = mediaStream.getVideoTracks()[0];
         imageCapture = new ImageCapture(mediaStreamTrack);
         console.log(imageCapture);
