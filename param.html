@@ -38,14 +38,14 @@
         
         const capabilities = mediaStreamTrack.getCapabilities();
         const settings = mediaStreamTrack.getSettings();
-        if (capabilities.zoom) {
-            document.querySelector('#output').innerHTML += '<div>' + 'false capabilities.zoom:' + capabilities.zoom + '</div>';
-        }
-        if (!('zoom' in capabilities)) {
-            document.querySelector('#output').innerHTML += '<div>' + 'in not capabilities.zoom:' + capabilities.zoom + '</div>';
-        }else{
-            document.querySelector('#output').innerHTML += '<div>' + 'in capabilities.zoom:' + capabilities.zoom + '</div>';
-        }
+        // if (capabilities.zoom) {
+        //     document.querySelector('#output').innerHTML += '<div>' + 'false capabilities.zoom:' + capabilities.zoom + '</div>';
+        // }
+        // if (!('zoom' in capabilities)) {
+        //     document.querySelector('#output').innerHTML += '<div>' + 'in not capabilities.zoom:' + capabilities.zoom + '</div>';
+        // }else{
+        //     document.querySelector('#output').innerHTML += '<div>' + 'in capabilities.zoom:' + capabilities.zoom + '</div>';
+        // }
         document.querySelector('#output').innerHTML += '<div>' + 'capabilities.zoom:' + capabilities.zoom + '</div>';
         document.querySelector('#output').innerHTML += '<div>' + 'capabilities.brightness:' + capabilities.brightness + '</div>';
         document.querySelector('#output').innerHTML += '<div>' + 'capabilities.contrast:' + capabilities.contrast + '</div>';
