@@ -10,8 +10,10 @@
         <!--<input type="range" id="rangezoom" hidden>-->
         <p>zoom <input type="range" id="rangezoom"></p>
         <p>解像度 <input type="range" id="rangeres"></p>
-        <button id="takePhotoButton" disabled>Take Photo</button>
-        <canvas></canvas>
+        <div>
+            <canvas id='takePhotoCanvas'></canvas>
+            <button id='takePhotoButton' disabled>Take Photo</button>
+        </div>
         
         <h3>Output</h3>
 
@@ -24,8 +26,8 @@
 //        document.querySelector('#log').textContent = 'aaaaauoeadf';
 //    };
     document.querySelector('#output').innerHTML += '<div>' + 'start.' + '</div>';
-
-
+    
+    var imageCapture;
     navigator.mediaDevices.getUserMedia({video: true})
       .then(gotMedia)
       .catch(error => console.error('getUserMedia() error:', error));
@@ -33,13 +35,38 @@
     function gotMedia(mediaStream) {
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia start' + '</div>';
         const mediaStreamTrack = mediaStream.getVideoTracks()[0];
-        const imageCapture = new ImageCapture(mediaStreamTrack);
+        imageCapture = new ImageCapture(mediaStreamTrack);
         console.log(imageCapture);
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia end' + '</div>';
     }
     
+    function onTakePhotoButtonClick() {
+        imageCapture.takePhoto()
+        .then(blob => createImageBitmap(blob))
+        .then(imageBitmap => {
+            const canvas = document.querySelector('#takePhotoCanvas');
+            drawCanvas(canvas, imageBitmap);
+        })
+        .catch(error => console.error('takePhoto() error:', error));
+    }
+
+/* Utils */
+
+    function drawCanvas(canvas, img) {
+        canvas.width = getComputedStyle(canvas).width.split('px')[0];
+        canvas.height = getComputedStyle(canvas).height.split('px')[0];
+        let ratio  = Math.min(canvas.width / img.width, canvas.height / img.height);
+        let x = (canvas.width - img.width * ratio) / 2;
+        let y = (canvas.height - img.height * ratio) / 2;
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height,
+            x, y, img.width * ratio, img.height * ratio);
+    }
     
-    
+    document.querySelector('#takePhotoButton').addEventListener('click', onTakePhotoButtonClick);
+    document.querySelector('video').addEventListener('play', function() {
+        document.querySelector('#takePhotoButton').disabled = false;
+    })
 //    navigator.mediaDevices.getUserMedia({video: true})
 //    .then(async mediaStream => {
 //      document.querySelector('video').srcObject = mediaStream;
