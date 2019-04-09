@@ -5,7 +5,7 @@
 		<title>パラメータ確認</title>
 	</head>
 	<body>
-		<h1>パラメータ確認 a</h1>
+		<h1>パラメータ確認 b</h1>
         <video autoplay></video>
         <!--<input type="range" id="rangezoom" hidden>-->
         <p>zoom <input type="range" id="rangezoom"></p>
@@ -46,6 +46,7 @@
         // }else{
         //     document.querySelector('#output').innerHTML += '<div>' + 'in capabilities.zoom:' + capabilities.zoom + '</div>';
         // }
+        document.querySelector('#output').innerHTML += '<div>' + 'capabilities:' + capabilities '</div>';
         document.querySelector('#output').innerHTML += '<div>' + 'capabilities.zoom:' + capabilities.zoom + '</div>';
         document.querySelector('#output').innerHTML += '<div>' + 'capabilities.brightness:' + capabilities.brightness + '</div>';
         document.querySelector('#output').innerHTML += '<div>' + 'capabilities.contrast:' + capabilities.contrast + '</div>';
