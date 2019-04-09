@@ -46,6 +46,8 @@
       if (!('zoom' in capabilities)) {
           document.querySelector('#output').textContent += '<div>' + 'Zoom is not supported.' + track.label + '</div>';
 //          return Promise.reject('Zoom is not supported by ' + track.label);
+      }else{
+          document.querySelector('#output').textContent += '<div>' + 'Zoom is supported.' + track.label + '</div>';
       }
         
     })
