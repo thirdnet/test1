@@ -55,7 +55,7 @@
         console.log(imageCapture);
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia end' + '</div>';
     })
-    .catch(error => console.error('getUserMedia() error:', error));)
+    .catch(error => console.error('getUserMedia() error:', error));
     
     function onTakePhotoButtonClick() {
         imageCapture.takePhoto()
