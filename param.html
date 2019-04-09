@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>パラメータ確認</title>
+	</head>
+	<body>
+		<h1>テスト</h1>
+        <video autoplay></video>
+        <!--<input type="range" id="rangezoom" hidden>-->
+        <p>zoom <input type="range" id="rangezoom"></p>
+        <p>解像度 <input type="range" id="rangeres"></p>
+        <button id="takePhotoButton" disabled>Take Photo</button>
+        <canvas></canvas>
+        
+        <h3>Output</h3>
+
+        
+        <div id="output"></div>
+
+        
+<script>
+//    window.onload = function() {
+//        document.querySelector('#log').textContent = 'aaaaauoeadf';
+//    };
+    document.querySelector('#output').innerHTML += '<div>' + 'start.' + '</div>';
+
+    navigator.mediaDevices.getUserMedia({video: true})
+    .then(async mediaStream => {
+      document.querySelector('video').srcObject = mediaStream;
+
+      // Once crbug.com/711524 is fixed, we won't need to wait anymore. This is
+      // currently needed because capabilities can only be retrieved after the
+      // device starts streaming. This happens after and asynchronously w.r.t.
+      // getUserMedia() returns.
+      await sleep(1000);
+
+      const track = mediaStream.getVideoTracks()[0];
+      const capabilities = track.getCapabilities();
+      const settings = track.getSettings();
+
+      //const input = document.querySelector('input[type="range"]');
+      const input = document.getElementById('rangezoom');
+
+      // Check whether zoom is supported or not.
+      if (!('zoom' in capabilities)) {
+          document.querySelector('#output').textContent += '<div>' + 'Zoom is not supported.' + track.label + '</div>';
+//          return Promise.reject('Zoom is not supported by ' + track.label);
+      }
+        
+    })
+    
+    
+    //var str = document.querySelector('#output').textContent;
+    document.querySelector('#output').innerHTML += '<div>' + 'end.' + '</div>';
+
+</script>
+
+	</body>
+</html>
