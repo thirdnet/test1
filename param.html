@@ -38,7 +38,8 @@
       const track = mediaStream.getVideoTracks()[0];
       const capabilities = track.getCapabilities();
       const settings = track.getSettings();
-
+        
+      document.querySelector('#output').textContent += '<div>' + 'getCapabilities.' + '</div>';
       //const input = document.querySelector('input[type="range"]');
       const input = document.getElementById('rangezoom');
 
