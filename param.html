@@ -27,10 +27,7 @@
     
     var imageCapture;
     navigator.mediaDevices.getUserMedia({video: true})
-      .then(async gotMedia)
-      .catch(error => console.error('getUserMedia() error:', error));
-
-    function gotMedia(mediaStream) {
+      .then(async mediaStream => {
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia start' + '</div>';
         document.querySelector('video').srcObject = mediaStream;
         // crbug.com/711524
@@ -57,7 +54,8 @@
         imageCapture = new ImageCapture(mediaStreamTrack);
         console.log(imageCapture);
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia end' + '</div>';
-    }
+    })
+    .catch(error => console.error('getUserMedia() error:', error));)
     
     function onTakePhotoButtonClick() {
         imageCapture.takePhoto()
