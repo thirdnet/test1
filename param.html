@@ -42,6 +42,8 @@
         }
         if (!('zoom' in capabilities)) {
             document.querySelector('#output').innerHTML += '<div>' + 'in not capabilities.zoom:' + capabilities.zoom + '</div>';
+        }else{
+            document.querySelector('#output').innerHTML += '<div>' + 'in capabilities.zoom:' + capabilities.zoom + '</div>';
         }
         document.querySelector('#output').innerHTML += '<div>' + 'capabilities.zoom:' + capabilities.zoom + '</div>';
         document.querySelector('#output').innerHTML += '<div>' + 'capabilities.brightness:' + capabilities.brightness + '</div>';
