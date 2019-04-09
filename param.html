@@ -5,7 +5,7 @@
 		<title>パラメータ確認</title>
 	</head>
 	<body>
-		<h1>テスト</h1>
+		<h1>パラメータ確認</h1>
         <video autoplay></video>
         <!--<input type="range" id="rangezoom" hidden>-->
         <p>zoom <input type="range" id="rangezoom"></p>
@@ -34,6 +34,15 @@
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia start' + '</div>';
         document.querySelector('video').srcObject = mediaStream;
         const mediaStreamTrack = mediaStream.getVideoTracks()[0];
+        
+        const capabilities = mediaStreamTrack.getCapabilities();
+        const settings = mediaStreamTrack.getSettings();
+        if (capabilities.zoom) {
+            document.querySelector('#output').innerHTML += '<div>' + 'capabilities.zoom:' + capabilities.zoom + '</div>';
+        }
+        document.querySelector('#output').innerHTML += '<div>' + 'capabilities.brightness:' + capabilities.brightness + '</div>';
+         
+        
         imageCapture = new ImageCapture(mediaStreamTrack);
         console.log(imageCapture);
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia end' + '</div>';
