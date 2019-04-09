@@ -5,7 +5,7 @@
 		<title>パラメータ確認</title>
 	</head>
 	<body>
-		<h1>パラメータ確認</h1>
+		<h1>パラメータ確認 a</h1>
         <video autoplay></video>
         <!--<input type="range" id="rangezoom" hidden>-->
         <p>zoom <input type="range" id="rangezoom"></p>
@@ -27,7 +27,7 @@
     
     var imageCapture;
     navigator.mediaDevices.getUserMedia({video: true})
-      .then(async mediaStream => {
+    .then(async mediaStream => {
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia start' + '</div>';
         document.querySelector('video').srcObject = mediaStream;
         // crbug.com/711524
