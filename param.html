@@ -70,7 +70,7 @@
             zoomSlider.step = capabilities.zoom.step;
             zoomSlider.value = settings.zoom;
             zoomSlider.input = function(event) {
-                track.applyConstraints({advanced: [ {zoom: event.target.value} ]});
+                track.applyConstraints({advanced: [ {zoom: event.target.value} ]})
                 .catch(error => console.error('applyConstraints() error:', error));
             }
         }
