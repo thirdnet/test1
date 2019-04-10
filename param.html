@@ -72,9 +72,9 @@
                 track.stop();
             });
         }else{
-            outputTEST('getStream mediaStream false' + mediaStream);
+            outputTEST('getStream mediaStream false: ' + mediaStream);
         }
-        outputTEST('document.querySelector('video').srcObject: ' + document.querySelector('video').srcObject);
+        outputTEST('document.querySelector(\'video\').srcObject: ' + document.querySelector('video').srcObject);
 
         var videoSource = videoSelect.value;
         constraints = {
