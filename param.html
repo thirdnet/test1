@@ -5,7 +5,7 @@
 		<title>パラメータ確認</title>
 	</head>
 	<body>
-		<h1>パラメータ確認 b</h1>
+		<h1>パラメータ確認 c</h1>
         <video autoplay></video>
         <!--<input type="range" id="rangezoom" hidden>-->
         <p>zoom <input type="range" id="rangezoom"></p>
@@ -24,14 +24,14 @@
 //        document.querySelector('#log').textContent = 'aaaaauoeadf';
 //    };
     document.querySelector('#output').innerHTML += '<div>' + 'start.' + '</div>';
-    
+
     var imageCapture;
     navigator.mediaDevices.getUserMedia({video: true})
     .then(async mediaStream => {
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia start' + '</div>';
         document.querySelector('video').srcObject = mediaStream;
+        // 待つ必要がある(バグらしい↓)
         // crbug.com/711524
-        //await new Promise(r => setTimeout(r, 1000);
         await sleep(1000);
 
         const mediaStreamTrack = mediaStream.getVideoTracks()[0];
@@ -53,6 +53,11 @@
         document.querySelector('#output').innerHTML += '<div>' + 'capabilities.contrast:' + capabilities.contrast + '</div>';
         document.querySelector('#output').innerHTML += '<div>' + 'capabilities.torch:' + capabilities.torch + '</div>';
 
+        
+        for(key in capabilities){
+            document.querySelector('#output').innerHTML += '<div>' + key + ': ' + capabilities[key] + '<div>';
+        }
+        
         imageCapture = new ImageCapture(mediaStreamTrack);
         console.log(imageCapture);
         document.querySelector('#output').innerHTML += '<div>' + 'gotMedia end' + '</div>';
