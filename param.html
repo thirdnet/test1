@@ -66,10 +66,11 @@
     function getStream() {
         outputTEST('getStream. start');
         if (mediaStream) {
+            outputTEST('getStream. mediaStream true');
             mediaStream.getTracks().forEach(track => {
                 outputTEST('trac.stop()');
                 track.stop();
-        });
+            });
         }
         var videoSource = videoSelect.value;
         constraints = {
@@ -89,17 +90,17 @@
             const capabilities = mediaStreamTrack.getCapabilities();
             const settings = mediaStreamTrack.getSettings();
 
-            outputTEST('* capabilities:' + capabilities);
-            for(key in capabilities){
-                outputTEST(key + ': ' + capabilities[key])
-            }
-            outputTEST('*');
+            // outputTEST('* capabilities:' + capabilities);
+            // for(key in capabilities){
+            //     outputTEST(key + ': ' + capabilities[key])
+            // }
+            // outputTEST('*');
 
-            outputTEST('* settings:' + capabilities);
-            for(key in settings){
-                outputTEST(key + ': ' + settings[key])
-            }
-            outputTEST('*');
+            // outputTEST('* settings:' + capabilities);
+            // for(key in settings){
+            //     outputTEST(key + ': ' + settings[key])
+            // }
+            // outputTEST('*');
 
             imageCapture = new ImageCapture(mediaStreamTrack);
             console.log(imageCapture);
