@@ -8,6 +8,10 @@
 		<h1>パラメータ確認 flash2</h1>
         <video autoplay></video>
         <!--<input type="range" id="rangezoom" hidden>-->
+        <div class="select">
+            <label for="videoSource">Video source: </label>
+            <select id="videoSource"></select>
+        </div>
         <p>zoom <input type="range" id="rangezoom"></p>
         <p>解像度 <input type="range" id="rangeres"></p>
         <div>
@@ -24,10 +28,72 @@
 //        document.querySelector('#log').textContent = 'aaaaauoeadf';
 //    };
     outputTEST('start.');
-
+    
+    // https://github.com/samdutton/simpl/blob/gh-pages/imagecapture/js/main.js
+    var videoSelect = document.querySelector('select#videoSource');
+    videoSelect.onchange = getStream;
+    // カメラデバイス取得
+    // Get a list of available media input (and output) devices
+    // then get a MediaStream for the currently selected input device
+    navigator.mediaDevices.enumerateDevices()
+    .then(gotDevices)
+    .catch(error => {
+        console.log('enumerateDevices() error: ', error);
+    })
+    .then(getStream);
+    
+    // カメラリスト
+    // From the list of media devices available, set up the camera source <select>,
+    // then get a video stream from the default camera source.
+    function gotDevices(deviceInfos) {
+        for (var i = 0; i !== deviceInfos.length; ++i) {
+            var deviceInfo = deviceInfos[i];
+            console.log('Found media input or output device: ', deviceInfo);
+            var option = document.createElement('option');
+            option.value = deviceInfo.deviceId;
+            if (deviceInfo.kind === 'videoinput') {
+                option.text = deviceInfo.label || 'Camera ' + (videoSelect.length + 1);
+                videoSelect.appendChild(option);
+            }
+        }
+    }
+    var constraints;
     var imageCapture;
-    navigator.mediaDevices.getUserMedia({video: true})
-    .then(async mediaStream => {
+    var mediaStream;
+    // Get a video stream from the currently selected camera source.
+    function getStream() {
+        if (mediaStream) {
+            mediaStream.getTracks().forEach(track => {
+                track.stop();
+        });
+        }
+        var videoSource = videoSelect.value;
+        constraints = {
+            video: {deviceId: videoSource ? {exact: videoSource} : undefined}
+        };
+        navigator.mediaDevices.getUserMedia(constraints)
+        .then(gotStream)
+        .catch(error => {
+            console.log('getUserMedia error: ', error);
+        });
+    }
+    // Display the stream from the currently selected camera source, and then
+    // create an ImageCapture object, using the video from the stream.
+    function gotStream(stream) {
+        console.log('getUserMedia() got stream: ', stream);
+        mediaStream = stream;
+        document.querySelector('video').srcObject = stream;
+        document.querySelector('video').classList.remove('hidden');
+        imageCapture = new ImageCapture(stream.getVideoTracks()[0]);
+//        getCapabilities();
+        gotStream2(stream);
+    }
+    
+    ///----
+    //var imageCapture;
+//    navigator.mediaDevices.getUserMedia({video: true})
+//    .then(async mediaStream => {
+    function gotStream2(async mediaStream) {
         outputTEST('gotMedia start');
         document.querySelector('video').srcObject = mediaStream;
         // 待つ必要がある(バグらしい↓)
@@ -88,7 +154,8 @@
     .catch(error => console.error('getUserMedia() error:', error));
     
     function onTakePhotoButtonClick() {
-        imageCapture.takePhoto({ fillLightMode : 'flash' })
+        imageCapture.takePhoto()
+//        imageCapture.takePhoto({ fillLightMode : 'flash' })   // flash
         .then(blob => createImageBitmap(blob))
         .then(imageBitmap => {
             const canvas = document.querySelector('#takePhotoCanvas');
