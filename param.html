@@ -23,12 +23,12 @@
 //    window.onload = function() {
 //        document.querySelector('#log').textContent = 'aaaaauoeadf';
 //    };
-    document.querySelector('#output').innerHTML += '<div>' + 'start.' + '</div>';
+    outputTEST('start.');
 
     var imageCapture;
     navigator.mediaDevices.getUserMedia({video: true})
     .then(async mediaStream => {
-        document.querySelector('#output').innerHTML += '<div>' + 'gotMedia start' + '</div>';
+        outputTEST('gotMedia start');
         document.querySelector('video').srcObject = mediaStream;
         // 待つ必要がある(バグらしい↓)
         // crbug.com/711524
@@ -39,28 +39,34 @@
         const capabilities = mediaStreamTrack.getCapabilities();
         const settings = mediaStreamTrack.getSettings();
         // if (capabilities.zoom) {
-        //     document.querySelector('#output').innerHTML += '<div>' + 'false capabilities.zoom:' + capabilities.zoom + '</div>';
+        //     outputTEST('false capabilities.zoom:' + capabilities.zoom);
         // }
         // if (!('zoom' in capabilities)) {
-        //     document.querySelector('#output').innerHTML += '<div>' + 'in not capabilities.zoom:' + capabilities.zoom + '</div>';
+        //     outputTEST('in not capabilities.zoom:' + capabilities.zoom);
         // }else{
-        //     document.querySelector('#output').innerHTML += '<div>' + 'in capabilities.zoom:' + capabilities.zoom + '</div>';
+        //     outputTEST('in capabilities.zoom:' + capabilities.zoom);
         // }
-        document.querySelector('#output').innerHTML += '<div>' + 'capabilities:' + capabilities + '</div>';
-        document.querySelector('#output').innerHTML += '<div>' + 'capabilities.zoom:' + capabilities.zoom + '</div>';
-        document.querySelector('#output').innerHTML += '<div>' + 'capabilities.focusDistance:' + capabilities.focusDistance + '</div>';
-        document.querySelector('#output').innerHTML += '<div>' + 'capabilities.brightness:' + capabilities.brightness + '</div>';
-        document.querySelector('#output').innerHTML += '<div>' + 'capabilities.contrast:' + capabilities.contrast + '</div>';
-        document.querySelector('#output').innerHTML += '<div>' + 'capabilities.torch:' + capabilities.torch + '</div>';
-
         
+        outputTEST('* capabilities:' + capabilities);
+//        outputTEST('capabilities.zoom:' + capabilities.zoom);
+//        outputTEST('capabilities.focusDistance:' + capabilities.focusDistance);
+//        outputTEST('capabilities.brightness:' + capabilities.brightness);
+//        outputTEST('capabilities.contrast:' + capabilities.contrast);
+//        outputTEST('capabilities.torch:' + capabilities.torch);
         for(key in capabilities){
-            document.querySelector('#output').innerHTML += '<div>' + key + ': ' + capabilities[key] + '<div>';
+            outputTEST(key + ': ' + capabilities[key])
         }
+        outputTEST('*');
+        
+        outputTEST('* settings:' + capabilities);
+        for(key in settings){
+            outputTEST(key + ': ' + settings[key])
+        }
+        outputTEST('*');
         
         imageCapture = new ImageCapture(mediaStreamTrack);
         console.log(imageCapture);
-        document.querySelector('#output').innerHTML += '<div>' + 'gotMedia end' + '</div>';
+        outputTEST('gotMedia end');
     })
     .catch(error => console.error('getUserMedia() error:', error));
     
@@ -75,6 +81,10 @@
     }
 
 /* Utils */
+    function outputTEST(msg) {
+        document.querySelector('#output').innerHTML += '<div>' + msg + '<div>';
+    }
+    
     function sleep(ms = 0) {
         return new Promise(r => setTimeout(r, ms));
     }
@@ -107,23 +117,23 @@
 //      const capabilities = track.getCapabilities();
 //      const settings = track.getSettings();
 //        
-//      document.querySelector('#output').innerHTML += '<div>' + 'getCapabilities.' + '</div>';
+//      outputTEST('getCapabilities.');
 //      //const input = document.querySelector('input[type="range"]');
 //      const input = document.getElementById('rangezoom');
 //
 //      // Check whether zoom is supported or not.
 //      if (!('zoom' in capabilities)) {
-//          document.querySelector('#output').innerHTML += '<div>' + 'Zoom is not supported.' + track.label + '</div>';
+//          outputTEST('Zoom is not supported.' + track.label);
 ////          return Promise.reject('Zoom is not supported by ' + track.label);
 //      }else{
-//          document.querySelector('#output').innerHTML += '<div>' + 'Zoom is supported.' + track.label + '</div>';
+//          outputTEST('Zoom is supported.' + track.label);
 //      }
 //        
 //    })
     
     
     //var str = document.querySelector('#output').textContent;
-    document.querySelector('#output').innerHTML += '<div>' + 'end.' + '</div>';
+    outputTEST('end.');
 
 </script>
 
