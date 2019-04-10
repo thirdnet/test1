@@ -64,8 +64,9 @@
     var mediaStream;
     // Get a video stream from the currently selected camera source.
     function getStream() {
-        outputTEST('getStream. start videoSelect.value: ' + videoSelect.value);
+        outputTEST('--getStream. start videoSelect.value: ' + videoSelect.value);
         mediaStream = document.querySelector('video').srcObject;
+        outputTEST('getStream : ' + mediaStream + 'video: ' + document.querySelector('video').srcObject;);
         if (mediaStream) {
             outputTEST('getStream. mediaStream true');
             mediaStream.getTracks().forEach(track => {
