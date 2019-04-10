@@ -5,7 +5,7 @@
 		<title>パラメータ確認</title>
 	</head>
 	<body>
-		<h1>パラメータ確認 c</h1>
+		<h1>パラメータ確認 d</h1>
         <video autoplay></video>
         <!--<input type="range" id="rangezoom" hidden>-->
         <p>zoom <input type="range" id="rangezoom"></p>
@@ -70,7 +70,7 @@
             zoomSlider.step = capabilities.zoom.step;
             zoomSlider.value = settings.zoom;
             zoomSlider.input = function(event) {
-                track.applyConstraints({advanced: [ {zoom: event.target.value} ]})
+                mediaStreamTrack.applyConstraints({advanced: [ {zoom: event.target.value} ]})
                 .catch(error => console.error('applyConstraints() error:', error));
             }
         }
