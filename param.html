@@ -64,18 +64,21 @@
     var mediaStream;
     // Get a video stream from the currently selected camera source.
     function getStream() {
-        outputTEST('getStream. start');
+        outputTEST('getStream. start videoSelect.value: ' + videoSelect.value);
         if (mediaStream) {
             outputTEST('getStream. mediaStream true');
             mediaStream.getTracks().forEach(track => {
                 outputTEST('trac.stop()');
                 track.stop();
             });
+        }else{
+            outputTEST('getStream mediaStream false');
         }
         var videoSource = videoSelect.value;
         constraints = {
             video: {deviceId: videoSource ? {exact: videoSource} : undefined}
         };
+        outputTEST('getStream. constraints: ' + constraints);
         navigator.mediaDevices.getUserMedia(constraints)
         //.then(gotStream)
         .then(async mediaStream => {
