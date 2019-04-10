@@ -125,9 +125,10 @@
 
             // torch
             if (capabilities.torch) {
+                outputTEST('torch enable. start')
                 track.applyConstraints({advanced: [{torch: true}]})
                 .catch(e => console.log(e));
-                outputTEST('torch enable.')
+                outputTEST('torch enable. end')
             }else{
                 outputTEST('torch disable.')
             }
