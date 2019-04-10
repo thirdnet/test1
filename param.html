@@ -48,11 +48,6 @@
         // }
         
         outputTEST('* capabilities:' + capabilities);
-//        outputTEST('capabilities.zoom:' + capabilities.zoom);
-//        outputTEST('capabilities.focusDistance:' + capabilities.focusDistance);
-//        outputTEST('capabilities.brightness:' + capabilities.brightness);
-//        outputTEST('capabilities.contrast:' + capabilities.contrast);
-//        outputTEST('capabilities.torch:' + capabilities.torch);
         for(key in capabilities){
             outputTEST(key + ': ' + capabilities[key])
         }
@@ -66,6 +61,19 @@
         
         imageCapture = new ImageCapture(mediaStreamTrack);
         console.log(imageCapture);
+        
+        // zoom
+        var zoomSlider = document.getElementById('rangezoom');
+        if (capabilities.zoom) {
+            zoomSlider.min = capabilities.zoom.min;
+            zoomSlider.max = capabilities.zoom.max;
+            zoomSlider.step = capabilities.zoom.step;
+            zoomSlider.value = settings.zoom;
+            zoomSlider.input = function(event) {
+                track.applyConstraints({advanced: [ {zoom: event.target.value} ]});
+                .catch(error => console.error('applyConstraints() error:', error));
+            }
+        }
         outputTEST('gotMedia end');
     })
     .catch(error => console.error('getUserMedia() error:', error));
