@@ -129,15 +129,15 @@
     }
     // Display the stream from the currently selected camera source, and then
     // create an ImageCapture object, using the video from the stream.
-    function gotStream(stream) {
-        console.log('getUserMedia() got stream: ', stream);
-        mediaStream = stream;
-        document.querySelector('video').srcObject = stream;
-        document.querySelector('video').classList.remove('hidden');
-        imageCapture = new ImageCapture(stream.getVideoTracks()[0]);
-//        getCapabilities();
-        gotStream2(stream);
-    }
+//    function gotStream(stream) {
+//        console.log('getUserMedia() got stream: ', stream);
+//        mediaStream = stream;
+//        document.querySelector('video').srcObject = stream;
+//        document.querySelector('video').classList.remove('hidden');
+//        imageCapture = new ImageCapture(stream.getVideoTracks()[0]);
+////        getCapabilities();
+//        gotStream2(stream);
+//    }
     
     ///----
     //var imageCapture;
