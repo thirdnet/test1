@@ -5,7 +5,7 @@
 		<title>パラメータ確認</title>
 	</head>
 	<body>
-		<h1>パラメータ確認 flash2</h1>
+		<h1>パラメータ確認 d</h1>
         <video autoplay></video>
         <!--<input type="range" id="rangezoom" hidden>-->
         <div class="select">
@@ -72,7 +72,57 @@
             video: {deviceId: videoSource ? {exact: videoSource} : undefined}
         };
         navigator.mediaDevices.getUserMedia(constraints)
-        .then(gotStream)
+        //.then(gotStream)
+        .then(async mediaStream => {
+            outputTEST('gotMedia start');
+            document.querySelector('video').srcObject = mediaStream;
+            document.querySelector('video').classList.remove('hidden');
+            // 待つ必要がある(バグらしい↓)
+            // crbug.com/711524
+            await sleep(1000);
+
+            const mediaStreamTrack = mediaStream.getVideoTracks()[0];
+            const capabilities = mediaStreamTrack.getCapabilities();
+            const settings = mediaStreamTrack.getSettings();
+
+            outputTEST('* capabilities:' + capabilities);
+            for(key in capabilities){
+                outputTEST(key + ': ' + capabilities[key])
+            }
+            outputTEST('*');
+
+            outputTEST('* settings:' + capabilities);
+            for(key in settings){
+                outputTEST(key + ': ' + settings[key])
+            }
+            outputTEST('*');
+
+            imageCapture = new ImageCapture(mediaStreamTrack);
+            console.log(imageCapture);
+
+            // zoom
+            var zoomSlider = document.getElementById('rangezoom');
+            if (capabilities.zoom) {
+                zoomSlider.min = capabilities.zoom.min;
+                zoomSlider.max = capabilities.zoom.max;
+                zoomSlider.step = capabilities.zoom.step;
+                zoomSlider.value = settings.zoom;
+                zoomSlider.oninput = function(event) {
+                    mediaStreamTrack.applyConstraints({advanced: [ {zoom: event.target.value} ]})
+                    .catch(error => console.error('applyConstraints() error:', error));
+                }
+            }
+
+            // torch
+            if (capabilities.torch) {
+                track.applyConstraints({advanced: [{torch: true}]})
+                .catch(e => console.log(e));
+                outputTEST('torch on.')
+            }else{
+                outputTEST('not torch.')
+            }
+            outputTEST('gotMedia end');
+        })
         .catch(error => {
             console.log('getUserMedia error: ', error);
         });
@@ -93,65 +143,56 @@
     //var imageCapture;
 //    navigator.mediaDevices.getUserMedia({video: true})
 //    .then(async mediaStream => {
-    function gotStream2(async mediaStream) {
-        outputTEST('gotMedia start');
-        document.querySelector('video').srcObject = mediaStream;
-        // 待つ必要がある(バグらしい↓)
-        // crbug.com/711524
-        await sleep(1000);
-
-        const mediaStreamTrack = mediaStream.getVideoTracks()[0];
-        
-        const capabilities = mediaStreamTrack.getCapabilities();
-        const settings = mediaStreamTrack.getSettings();
-        // if (capabilities.zoom) {
-        //     outputTEST('false capabilities.zoom:' + capabilities.zoom);
-        // }
-        // if (!('zoom' in capabilities)) {
-        //     outputTEST('in not capabilities.zoom:' + capabilities.zoom);
-        // }else{
-        //     outputTEST('in capabilities.zoom:' + capabilities.zoom);
-        // }
-        
-        outputTEST('* capabilities:' + capabilities);
-        for(key in capabilities){
-            outputTEST(key + ': ' + capabilities[key])
-        }
-        outputTEST('*');
-        
-        outputTEST('* settings:' + capabilities);
-        for(key in settings){
-            outputTEST(key + ': ' + settings[key])
-        }
-        outputTEST('*');
-        
-        imageCapture = new ImageCapture(mediaStreamTrack);
-        console.log(imageCapture);
-        
-        // zoom
-        var zoomSlider = document.getElementById('rangezoom');
-        if (capabilities.zoom) {
-            zoomSlider.min = capabilities.zoom.min;
-            zoomSlider.max = capabilities.zoom.max;
-            zoomSlider.step = capabilities.zoom.step;
-            zoomSlider.value = settings.zoom;
-            zoomSlider.oninput = function(event) {
-                mediaStreamTrack.applyConstraints({advanced: [ {zoom: event.target.value} ]})
-                .catch(error => console.error('applyConstraints() error:', error));
-            }
-        }
-        
-        // torch
-        if (capabilities.torch) {
-            track.applyConstraints({advanced: [{torch: true}]})
-            .catch(e => console.log(e));
-            outputTEST('torch on.')
-        }else{
-            outputTEST('not torch.')
-        }
-        outputTEST('gotMedia end');
-    })
-    .catch(error => console.error('getUserMedia() error:', error));
+//    function gotStream2(async mediaStream) {
+//        outputTEST('gotMedia start');
+//        document.querySelector('video').srcObject = mediaStream;
+//        // 待つ必要がある(バグらしい↓)
+//        // crbug.com/711524
+//        await sleep(1000);
+//
+//        const mediaStreamTrack = mediaStream.getVideoTracks()[0];
+//        const capabilities = mediaStreamTrack.getCapabilities();
+//        const settings = mediaStreamTrack.getSettings();
+//        
+//        outputTEST('* capabilities:' + capabilities);
+//        for(key in capabilities){
+//            outputTEST(key + ': ' + capabilities[key])
+//        }
+//        outputTEST('*');
+//        
+//        outputTEST('* settings:' + capabilities);
+//        for(key in settings){
+//            outputTEST(key + ': ' + settings[key])
+//        }
+//        outputTEST('*');
+//        
+//        imageCapture = new ImageCapture(mediaStreamTrack);
+//        console.log(imageCapture);
+//        
+//        // zoom
+//        var zoomSlider = document.getElementById('rangezoom');
+//        if (capabilities.zoom) {
+//            zoomSlider.min = capabilities.zoom.min;
+//            zoomSlider.max = capabilities.zoom.max;
+//            zoomSlider.step = capabilities.zoom.step;
+//            zoomSlider.value = settings.zoom;
+//            zoomSlider.oninput = function(event) {
+//                mediaStreamTrack.applyConstraints({advanced: [ {zoom: event.target.value} ]})
+//                .catch(error => console.error('applyConstraints() error:', error));
+//            }
+//        }
+//        
+//        // torch
+//        if (capabilities.torch) {
+//            track.applyConstraints({advanced: [{torch: true}]})
+//            .catch(e => console.log(e));
+//            outputTEST('torch on.')
+//        }else{
+//            outputTEST('not torch.')
+//        }
+//        outputTEST('gotMedia end');
+//    })
+//    .catch(error => console.error('getUserMedia() error:', error));
     
     function onTakePhotoButtonClick() {
         imageCapture.takePhoto()
