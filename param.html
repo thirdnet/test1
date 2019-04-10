@@ -5,7 +5,7 @@
 		<title>パラメータ確認</title>
 	</head>
 	<body>
-		<h1>パラメータ確認 g</h1>
+		<h1>パラメータ確認 h</h1>
         <video autoplay></video>
         <!--<input type="range" id="rangezoom" hidden>-->
         <p>zoom <input type="range" id="rangezoom"></p>
@@ -76,14 +76,13 @@
         }
         
         // torch
-        track.applyConstraints({advanced: [{torch: true}]})
-//        if (capabilities.torch) {
-//            track.applyConstraints({advanced: [{torch: true}]})
-//            .catch(e => console.log(e));
-//            outputTEST('torch on.')
-//        }else{
-//            outputTEST('not torch.')
-//        }
+        if (capabilities.torch) {
+            track.applyConstraints({advanced: [{torch: true}]})
+            .catch(e => console.log(e));
+            outputTEST('torch on.')
+        }else{
+            outputTEST('not torch.')
+        }
         outputTEST('gotMedia end');
     })
     .catch(error => console.error('getUserMedia() error:', error));
