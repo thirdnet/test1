@@ -5,15 +5,16 @@
 		<title>パラメータ確認</title>
 	</head>
 	<body>
-		<h1>パラメータ確認 e</h1>
+		<h1>パラメータ確認 f</h1>
         <video autoplay></video>
         <!--<input type="range" id="rangezoom" hidden>-->
         <div class="select">
             <label for="videoSource">Video source: </label>
             <select id="videoSource"></select>
         </div>
-        <p>zoom <input type="range" id="rangezoom"></p>
-        <p>解像度 <input type="range" id="rangeres"></p>
+        <p>zoom <input type="range" id="rangezoom" disabled></p>
+        <p>解像度 <input type="range" id="rangeres" disabled></p>
+        <p>ライト <input type="checkbox" id="checkbox_torch" disabled></p>
         <div>
             <canvas id='takePhotoCanvas'></canvas>
             <button id='takePhotoButton' disabled>Take Photo</button>
@@ -31,6 +32,7 @@
     
     // https://github.com/samdutton/simpl/blob/gh-pages/imagecapture/js/main.js
     var videoSelect = document.querySelector('select#videoSource');
+    
     videoSelect.onchange = getStream;
     // カメラデバイス取得
     // Get a list of available media input (and output) devices
@@ -62,6 +64,9 @@
     var constraints;
     var imageCapture;
     var mediaStream;
+    var mediaStreamTrack;
+    var capabilities;
+    var settings;
     // Get a video stream from the currently selected camera source.
     function getStream() {
         outputTEST('**getStream. start videoSelect.value: ' + videoSelect.value);
@@ -91,9 +96,9 @@
             // crbug.com/711524
             await sleep(1000);
 
-            const mediaStreamTrack = mediaStream.getVideoTracks()[0];
-            const capabilities = mediaStreamTrack.getCapabilities();
-            const settings = mediaStreamTrack.getSettings();
+            mediaStreamTrack = mediaStream.getVideoTracks()[0];
+            capabilities = mediaStreamTrack.getCapabilities();
+            settings = mediaStreamTrack.getSettings();
 
             outputTEST('* capabilities:' + capabilities);
             for(key in capabilities){
@@ -124,15 +129,15 @@
             }
 
             // torch
-            if (capabilities.torch) {
-                outputTEST('torch enable. start')
-                track.applyConstraints({advanced: [{torch: true}]})
-                //.catch(e => console.log(e));
-                .catch(e => outputTEST('torch error:' + e));
-                outputTEST('torch enable. end')
-            }else{
-                outputTEST('torch disable.')
-            }
+//            if (capabilities.torch) {
+//                outputTEST('torch enable. start')
+//                track.applyConstraints({advanced: [{torch: true}]})
+//                //.catch(e => console.log(e));
+//                .catch(e => outputTEST('torch error:' + e));
+//                outputTEST('torch enable. end')
+//            }else{
+//                outputTEST('torch disable.')
+//            }
             outputTEST('gotMedia end');
         })
         .catch(error => {
@@ -240,6 +245,30 @@
     document.querySelector('#takePhotoButton').addEventListener('click', onTakePhotoButtonClick);
     document.querySelector('video').addEventListener('play', function() {
         document.querySelector('#takePhotoButton').disabled = false;
+        document.querySelector('#rangezoom').disabled = false;
+        document.querySelector('#rangeres').disabled = false;
+        document.querySelector('#checkbox_torch').disabled = false;
+    })
+    var chkTorch = document.querySelector('input[id="checkbox_torch"]');
+    chkTorch.addEventListener('click', function() {
+        // ライトのチェックボックスがクリックされた
+//        if(chkTorch.checked){
+//            // チェックあり
+//            console.log('chkTorch cheked checkbox: ' + chkTorch.checked)
+//        }else{
+//            // チェックなし
+//            console.log('chkTorch not cheked checkbox: ' + chkTorch.checked)
+//        }
+        if (capabilities.torch) {
+            outputTEST('torch enable. start')
+            //mediaStreamTrack.applyConstraints({advanced: [{torch: true}]})
+            mediaStreamTrack.applyConstraints({advanced: [{torch: chkTorch.checked}]})
+            //.catch(e => console.log(e));
+            .catch(e => outputTEST('torch error:' + e));
+            outputTEST('torch enable. end')
+        }else{
+            outputTEST('torch disable. checkbox: ' + chkTorch.checked)
+        }
     })
 //    navigator.mediaDevices.getUserMedia({video: true})
 //    .then(async mediaStream => {
