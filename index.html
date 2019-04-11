@@ -2,10 +2,10 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>パラメータ確認</title>
+		<title>カメラ確認</title>
 	</head>
 	<body>
-		<h1>パラメータ確認 f</h1>
+		<h1>カメラ確認</h1>
         <video autoplay></video>
         <!--<input type="range" id="rangezoom" hidden>-->
         <div class="select">
@@ -30,6 +30,13 @@
 //    };
     outputTEST('start.');
     
+    var supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
+    outputTEST('* SupportedConstraints:' + supportedConstraints);
+    for(key in supportedConstraints){
+        outputTEST(key + ': ' + supportedConstraints[key])
+    }
+    outputTEST('*');
+    
     // https://github.com/samdutton/simpl/blob/gh-pages/imagecapture/js/main.js
     var videoSelect = document.querySelector('select#videoSource');
     
@@ -43,6 +50,7 @@
         console.log('enumerateDevices() error: ', error);
     })
     .then(getStream);
+
     
     // カメラリスト
     // From the list of media devices available, set up the camera source <select>,
