@@ -1,192 +1,271 @@
-<!doctype html>
-<!--
-Copyright 2019 Google Inc. All Rights Reserved.
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>パラメータ確認</title>
+	</head>
+	<body>
+		<h1>パラメータ確認 f</h1>
+        <video autoplay></video>
+        <!--<input type="range" id="rangezoom" hidden>-->
+        <div class="select">
+            <label for="videoSource">Video source: </label>
+            <select id="videoSource"></select>
+        </div>
+        <p>zoom <input type="range" id="rangezoom" disabled></p>
+        <p>解像度 <input type="range" id="rangeres" disabled></p>
+        <p>ライト <input type="checkbox" id="checkbox_torch" disabled></p>
+        <div>
+            <canvas id='takePhotoCanvas'></canvas>
+            <button id='takePhotoButton' disabled>Take Photo</button>
+        </div>
+        
+        <h3>Output</h3>
+        <div id="output"></div>
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-  http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
--->
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="description" content="Sample illustrating the use of Image Capture / Update Camera Zoom.">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+<script>
+//    window.onload = function() {
+//        document.querySelector('#log').textContent = 'aaaaauoeadf';
+//    };
+    outputTEST('start.');
     
-    <title>test camera</title>
-    <script>
-      // Add a global error event listener early on in the page load, to help ensure that browsers
-      // which don't support specific functionality still end up displaying a meaningful message.
-      window.addEventListener('error', function(error) {
-        if (ChromeSamples && ChromeSamples.setStatus) {
-          console.error(error);
-          ChromeSamples.setStatus(error.message + ' (Your browser may not support this feature.)');
-          error.preventDefault();
+    // https://github.com/samdutton/simpl/blob/gh-pages/imagecapture/js/main.js
+    var videoSelect = document.querySelector('select#videoSource');
+    
+    videoSelect.onchange = getStream;
+    // カメラデバイス取得
+    // Get a list of available media input (and output) devices
+    // then get a MediaStream for the currently selected input device
+    navigator.mediaDevices.enumerateDevices()
+    .then(gotDevices)
+    .catch(error => {
+        console.log('enumerateDevices() error: ', error);
+    })
+    .then(getStream);
+    
+    // カメラリスト
+    // From the list of media devices available, set up the camera source <select>,
+    // then get a video stream from the default camera source.
+    function gotDevices(deviceInfos) {
+        outputTEST('gotDevices. start');
+        for (var i = 0; i !== deviceInfos.length; ++i) {
+            var deviceInfo = deviceInfos[i];
+            console.log('Found media input or output device: ', deviceInfo);
+            var option = document.createElement('option');
+            option.value = deviceInfo.deviceId;
+            if (deviceInfo.kind === 'videoinput') {
+                option.text = deviceInfo.label || 'Camera ' + (videoSelect.length + 1);
+                videoSelect.appendChild(option);
+            }
         }
-      });
-    </script>
-    
-    
-    
-    
-    <link rel="icon" href="../images/favicon.ico">
-    
-    <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" href="update-camera-zoom.css">
-    
-  </head>
-
-  <body>
-    
-    <h1>Camera Sample</h1>
-    <h3>Background</h3>
-<p>camera sample</p>
-
-<video autoplay></video>
-<!--<input type="range" id="rangezoom" hidden>-->
-<input type="range" id="rangezoom">
-<input type="range" id="rangeres">
-<button id="takePhotoButton" disabled>Take Photo</button>
-<canvas></canvas>
-
-<script>
-  var ChromeSamples = {
-    log: function() {
-      var line = Array.prototype.slice.call(arguments).map(function(argument) {
-        return typeof argument === 'string' ? argument : JSON.stringify(argument);
-      }).join(' ');
-
-      document.querySelector('#log').textContent += line + '\n';
-    },
-
-    clearLog: function() {
-      document.querySelector('#log').textContent = '';
-    },
-
-    setStatus: function(status) {
-      document.querySelector('#status').textfContent = status;
-    },
-
-    setContent: function(newContent) {
-      var content = document.querySelector('#content');
-      while(content.hasChildNodes()) {
-        content.removeChild(content.lastChild);
-      }
-      content.appendChild(newContent);
+        outputTEST('gotDevices. end');
     }
-  };
-</script>
+    var constraints;
+    var imageCapture;
+    var mediaStream;
+    var mediaStreamTrack;
+    var capabilities;
+    var settings;
+    // Get a video stream from the currently selected camera source.
+    function getStream() {
+        outputTEST('**getStream. start videoSelect.value: ' + videoSelect.value);
+        mediaStream = document.querySelector('video').srcObject;
+        if (mediaStream) {
+            outputTEST('getStream. mediaStream true');
+            mediaStream.getTracks().forEach(track => {
+                outputTEST('trac.stop()');
+                track.stop();
+            });
+        }else{
+            outputTEST('getStream mediaStream false: ' + mediaStream);
+        }
 
-<h3>Live Output</h3>
-<div id="output" class="output">
-  <div id="content"></div>
-  <div id="status"></div>
-  <pre id="log"></pre>
-</div>
+        var videoSource = videoSelect.value;
+        constraints = {
+            video: {deviceId: videoSource ? {exact: videoSource} : undefined}
+        };
+        outputTEST('getStream. constraints: ' + constraints);
+        navigator.mediaDevices.getUserMedia(constraints)
+        //.then(gotStream)
+        .then(async mediaStream => {
+            outputTEST('gotMedia start');
+            document.querySelector('video').srcObject = mediaStream;
+            document.querySelector('video').classList.remove('hidden');
+            // 待つ必要がある(バグらしい↓)
+            // crbug.com/711524
+            await sleep(1000);
 
+            mediaStreamTrack = mediaStream.getVideoTracks()[0];
+            capabilities = mediaStreamTrack.getCapabilities();
+            settings = mediaStreamTrack.getSettings();
 
-<script>
-  if (/Chrome\/(\d+\.\d+.\d+.\d+)/.test(navigator.userAgent)){
-    // Let's log a warning if the sample is not supposed to execute on this
-    // version of Chrome.
-    if (59 > parseInt(RegExp.$1)) {
-      ChromeSamples.setStatus('Warning! Keep in mind this sample has been tested with Chrome ' + 59 + '.');
+            outputTEST('* capabilities:' + capabilities);
+            for(key in capabilities){
+                outputTEST(key + ': ' + capabilities[key])
+            }
+            outputTEST('*');
+
+            outputTEST('* settings:' + capabilities);
+            for(key in settings){
+                outputTEST(key + ': ' + settings[key])
+            }
+            outputTEST('*');
+
+            imageCapture = new ImageCapture(mediaStreamTrack);
+            console.log(imageCapture);
+
+            // zoom
+            var zoomSlider = document.getElementById('rangezoom');
+            if (capabilities.zoom) {
+                zoomSlider.min = capabilities.zoom.min;
+                zoomSlider.max = capabilities.zoom.max;
+                zoomSlider.step = capabilities.zoom.step;
+                zoomSlider.value = settings.zoom;
+                zoomSlider.oninput = function(event) {
+                    mediaStreamTrack.applyConstraints({advanced: [ {zoom: event.target.value} ]})
+                    .catch(error => console.error('applyConstraints() error:', error));
+                }
+            }
+
+            // torch
+//            if (capabilities.torch) {
+//                outputTEST('torch enable. start')
+//                mediaStreamTrack.applyConstraints({advanced: [{torch: true}]})
+//                //.catch(e => console.log(e));
+//                .catch(e => outputTEST('torch error:' + e));
+//                outputTEST('torch enable. end')
+//            }else{
+//                outputTEST('torch disable.')
+//            }
+            outputTEST('gotMedia end');
+        })
+        .catch(error => {
+            console.log('getUserMedia error: ', error);
+        });
+        outputTEST('getStream. end');
     }
-  }
-</script>
-
-
-
-
-  
+    // Display the stream from the currently selected camera source, and then
+    // create an ImageCapture object, using the video from the stream.
+//    function gotStream(stream) {
+//        console.log('getUserMedia() got stream: ', stream);
+//        mediaStream = stream;
+//        document.querySelector('video').srcObject = stream;
+//        document.querySelector('video').classList.remove('hidden');
+//        imageCapture = new ImageCapture(stream.getVideoTracks()[0]);
+////        getCapabilities();
+//        gotStream2(stream);
+//    }
     
-<script>
-// zoom
-//resolution
-//const input = document.querySelector('input[type="range"]');
-const inputrange = document.getElementById('rangeres');
-var imageCapture;
-
-navigator.mediaDevices.getUserMedia({video: true})
-.then(async mediaStream => {
-  document.querySelector('video').srcObject = mediaStream;
-  // Once crbug.com/711524 is fixed, we won't need to wait anymore. This is
-  // currently needed because capabilities can only be retrieved after the
-  // device starts streaming. This happens after and asynchronously w.r.t.
-  // getUserMedia() returns.
-  await sleep(1000);
-  const track = mediaStream.getVideoTracks()[0];
-  const capabilities = track.getCapabilities();
-  const settings = track.getSettings();
-  //const input = document.querySelector('input[type="range"]');
-  const input = document.getElementById('rangezoom');
-  // Check whether zoom is supported or not.
-  if (!('zoom' in capabilities)) {
-    return Promise.reject('Zoom is not supported by ' + track.label);
-  }
-  // Map zoom to a slider element.
-  input.min = capabilities.zoom.min;
-  input.max = capabilities.zoom.max;
-  input.step = capabilities.zoom.step;
-  input.value = settings.zoom;
-  input.oninput = function(event) {
-    track.applyConstraints({advanced: [ {zoom: event.target.value} ]});
-  }
-  input.hidden = false;
-//})
-//.then(mediaStream => {
-//  document.querySelector('video').srcObject = mediaStream;
-//  const track = mediaStream.getVideoTracks()[0];
-  imageCapture = new ImageCapture(track);
-  return imageCapture.getPhotoCapabilities();
-})
-.then(photoCapabilities => {
-  const settings = imageCapture.track.getSettings();
-  inputrange.min = photoCapabilities.imageWidth.min;
-  inputrange.max = photoCapabilities.imageWidth.max;
-  inputrange.step = photoCapabilities.imageWidth.step;
-  return imageCapture.getPhotoSettings();
-})
-.then(photoSettings => {
-  inputrange.value = photoSettings.imageWidth;
-})
-.catch(error => ChromeSamples.log('Argh!', error.name || error));
+    ///----
+    //var imageCapture;
+//    navigator.mediaDevices.getUserMedia({video: true})
+//    .then(async mediaStream => {
+//    function gotStream2(async mediaStream) {
+//        outputTEST('gotMedia start');
+//        document.querySelector('video').srcObject = mediaStream;
+//        // 待つ必要がある(バグらしい↓)
+//        // crbug.com/711524
+//        await sleep(1000);
+//
+//        const mediaStreamTrack = mediaStream.getVideoTracks()[0];
+//        const capabilities = mediaStreamTrack.getCapabilities();
+//        const settings = mediaStreamTrack.getSettings();
+//        
+//        outputTEST('* capabilities:' + capabilities);
+//        for(key in capabilities){
+//            outputTEST(key + ': ' + capabilities[key])
+//        }
+//        outputTEST('*');
+//        
+//        outputTEST('* settings:' + capabilities);
+//        for(key in settings){
+//            outputTEST(key + ': ' + settings[key])
+//        }
+//        outputTEST('*');
+//        
+//        imageCapture = new ImageCapture(mediaStreamTrack);
+//        console.log(imageCapture);
+//        
+//        // zoom
+//        var zoomSlider = document.getElementById('rangezoom');
+//        if (capabilities.zoom) {
+//            zoomSlider.min = capabilities.zoom.min;
+//            zoomSlider.max = capabilities.zoom.max;
+//            zoomSlider.step = capabilities.zoom.step;
+//            zoomSlider.value = settings.zoom;
+//            zoomSlider.oninput = function(event) {
+//                mediaStreamTrack.applyConstraints({advanced: [ {zoom: event.target.value} ]})
+//                .catch(error => console.error('applyConstraints() error:', error));
+//            }
+//        }
+//        
+//        // torch
+//        if (capabilities.torch) {
+//            track.applyConstraints({advanced: [{torch: true}]})
+//            .catch(e => console.log(e));
+//            outputTEST('torch on.')
+//        }else{
+//            outputTEST('not torch.')
+//        }
+//        outputTEST('gotMedia end');
+//    })
+//    .catch(error => console.error('getUserMedia() error:', error));
+    
+    function onTakePhotoButtonClick() {
+        imageCapture.takePhoto()
+//        imageCapture.takePhoto({ fillLightMode : 'flash' })   // flash
+        .then(blob => createImageBitmap(blob))
+        .then(imageBitmap => {
+            const canvas = document.querySelector('#takePhotoCanvas');
+            drawCanvas(canvas, imageBitmap);
+        })
+        .catch(error => console.error('takePhoto() error:', error));
+    }
 
 /* Utils */
-
-function sleep(ms = 0) {
-  return new Promise(r => setTimeout(r, ms));
-}
+    function outputTEST(msg) {
+        document.querySelector('#output').innerHTML += '<div>' + msg + '<div>';
+    }
     
+    function sleep(ms = 0) {
+        return new Promise(r => setTimeout(r, ms));
+    }
+    function drawCanvas(canvas, img) {
+        canvas.width = getComputedStyle(canvas).width.split('px')[0];
+        canvas.height = getComputedStyle(canvas).height.split('px')[0];
+        let ratio  = Math.min(canvas.width / img.width, canvas.height / img.height);
+        let x = (canvas.width - img.width * ratio) / 2;
+        let y = (canvas.height - img.height * ratio) / 2;
+        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height,
+            x, y, img.width * ratio, img.height * ratio);
+    }
     
+    document.querySelector('#takePhotoButton').addEventListener('click', onTakePhotoButtonClick);
+    document.querySelector('video').addEventListener('play', function() {
+        document.querySelector('#takePhotoButton').disabled = false;
+        document.querySelector('#rangezoom').disabled = false;
+        document.querySelector('#rangeres').disabled = false;
+        document.querySelector('#checkbox_torch').disabled = false;
+    })
+    var chkTorch = document.querySelector('input[id="checkbox_torch"]');
+    chkTorch.addEventListener('click', function() {
+        if (capabilities.torch) {
+            outputTEST('torch enable. checkbox: ' + chkTorch.checked);
+            //mediaStreamTrack.applyConstraints({advanced: [{torch: true}]})
+            mediaStreamTrack.applyConstraints({advanced: [{torch: chkTorch.checked}]})
+            //.catch(e => console.log(e));
+            .catch(e => outputTEST('torch error:' + e));
+        }else{
+            outputTEST('torch disable. checkbox: ' + chkTorch.checked);
+        }
+    })
     
-   
-document.querySelector('video').addEventListener('play', function() {
-  document.querySelector('#takePhotoButton').disabled = false;
-});
-
-/* Utils */
-
-function drawCanvas(img) {
-  const canvas = document.querySelector('canvas');
-  canvas.width = getComputedStyle(canvas).width.split('px')[0];
-  canvas.height = getComputedStyle(canvas).height.split('px')[0];
-  let ratio  = Math.min(canvas.width / img.width, canvas.height / img.height);
-  let x = (canvas.width - img.width * ratio) / 2;
-  let y = (canvas.height - img.height * ratio) / 2;
-  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-  canvas.getContext('2d').drawImage(img, 0, 0, img.width, img.height,
-      x, y, img.width * ratio, img.height * ratio);
-}
+    //var str = document.querySelector('#output').textContent;
+    outputTEST('end.');
 
 </script>
-  </body>
+
+	</body>
 </html>
