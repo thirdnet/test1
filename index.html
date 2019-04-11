@@ -59,6 +59,8 @@
                 videoSelect.appendChild(option);
             }
         }
+        // 仮に最後のデバイスを選択
+        videoSelect.options[videoSelect.length-1].selected = true;
         outputTEST('gotDevices. end');
     }
     var constraints;
