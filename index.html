@@ -14,6 +14,7 @@
         </div>
         <p>zoom <input type="range" id="rangezoom" disabled></p>
         <p>focusDistance <input type="range" id="rangefocus" disabled></p>
+        <p>ホワイトバランス(色温度) <input type="range" id="rangeColor" disabled></p>
         <p>解像度 <input type="range" id="rangeres" disabled></p>
         <p>ライト <input type="checkbox" id="checkbox_torch" disabled></p>
         <div>
@@ -171,6 +172,18 @@
                     .catch(error => console.error('applyConstraints() error:', error));
                 }
             }
+            // colorTemperature
+            var colorSlider = document.getElementById('rangeColor');
+            if (capabilities.colorTemperature) {
+                colorSlider.min = capabilities.colorTemperature.min;
+                colorSlider.max = capabilities.colorTemperature.max;
+                colorSlider.step = capabilities.colorTemperature.step;
+                colorSlider.value = settings.colorTemperature;
+                colorSlider.oninput = function(event) {
+                    mediaStreamTrack.applyConstraints({advanced : [{whiteBalanceMode: "manual", colorTemperature: event.target.value}]})
+                    .catch(error => console.error('applyConstraints() error:', error));
+                }
+            }
             // pointsOfInterest
 //            mediaStreamTrack.applyConstraints({advanced : [{pointsOfInterest: { x:0.5, y:0.5 }}]})
 //            .catch(error => outputTEST('pointsOfInterest error:' + error));
@@ -217,6 +230,7 @@
         document.querySelector('#takePhotoButton').disabled = false;
         document.querySelector('#rangezoom').disabled = false;
         document.querySelector('#rangefocus').disabled = false;
+        document.querySelector('#rangeColor').disabled = false;
         document.querySelector('#rangeres').disabled = false;
         document.querySelector('#checkbox_torch').disabled = false;
     })
