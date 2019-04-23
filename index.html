@@ -5,7 +5,7 @@
 		<title>カメラ確認</title>
 	</head>
 	<body>
-		<h1>カメラ確認</h1>
+		<h1>カメラ確認 フラッシュ</h1>
         <video autoplay></video>
         <!--<input type="range" id="rangezoom" hidden>-->
         <div class="select">
@@ -195,8 +195,9 @@
         outputTEST('getStream. end');
     }
     function onTakePhotoButtonClick() {
-        imageCapture.takePhoto()
-//        imageCapture.takePhoto({ fillLightMode : 'flash' })   // flash
+//        imageCapture.takePhoto()
+        //imageCapture.takePhoto({imageWidth: 300})
+        imageCapture.takePhoto({ fillLightMode: 'flash' })   // flash
         .then(blob => createImageBitmap(blob))
         .then(imageBitmap => {
             const canvas = document.querySelector('#takePhotoCanvas');
