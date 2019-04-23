@@ -13,6 +13,7 @@
             <select id="videoSource"></select>
         </div>
         <p>zoom <input type="range" id="rangezoom" disabled></p>
+        <p>focusDistance <input type="range" id="rangefocus" disabled></p>
         <p>解像度 <input type="range" id="rangeres" disabled></p>
         <p>ライト <input type="checkbox" id="checkbox_torch" disabled></p>
         <div>
@@ -158,6 +159,18 @@
                     .catch(error => console.error('applyConstraints() error:', error));
                 }
             }
+            // focusDistance
+            var focusSlider = document.getElementById('rangefocus');
+            if (capabilities.focusDistance) {
+                focusSlider.min = capabilities.focusDistance.min;
+                focusSlider.max = capabilities.focusDistance.max;
+                focusSlider.step = capabilities.focusDistance.step;
+                focusSlider.value = settings.focusDistance;
+                focusSlider.oninput = function(event) {
+                    mediaStreamTrack.applyConstraints({advanced : [{focusMode: "manual", focusDistance: event.target.value}]})
+                    .catch(error => console.error('applyConstraints() error:', error));
+                }
+            }
             // pointsOfInterest
 //            mediaStreamTrack.applyConstraints({advanced : [{pointsOfInterest: { x:0.5, y:0.5 }}]})
 //            .catch(error => outputTEST('pointsOfInterest error:' + error));
@@ -203,6 +216,7 @@
     document.querySelector('video').addEventListener('play', function() {
         document.querySelector('#takePhotoButton').disabled = false;
         document.querySelector('#rangezoom').disabled = false;
+        document.querySelector('#rangefocus').disabled = false;
         document.querySelector('#rangeres').disabled = false;
         document.querySelector('#checkbox_torch').disabled = false;
     })
