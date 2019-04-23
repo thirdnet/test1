@@ -31,11 +31,11 @@
     outputTEST('start.');
     
     var supportedConstraints = navigator.mediaDevices.getSupportedConstraints();
-    outputTEST('* SupportedConstraints:' + supportedConstraints);
-    for(key in supportedConstraints){
-        outputTEST(key + ': ' + supportedConstraints[key])
-    }
-    outputTEST('*');
+    outputTEST('* SupportedConstraints:' + JSON.stringify(supportedConstraints, null , "\t"));
+//    for(key in supportedConstraints){
+//        outputTEST(key + ': ' + supportedConstraints[key])
+//    }
+    outputTEST('*-----*');
     
     // https://github.com/samdutton/simpl/blob/gh-pages/imagecapture/js/main.js
     var videoSelect = document.querySelector('select#videoSource');
@@ -95,7 +95,7 @@
         constraints = {
             video: {deviceId: videoSource ? {exact: videoSource} : undefined}
         };
-        outputTEST('getStream. constraints: ' + constraints);
+//        outputTEST('getStream. constraints: ' + constraints);
         navigator.mediaDevices.getUserMedia(constraints)
         //.then(gotStream)
         .then(async mediaStream => {
@@ -110,21 +110,42 @@
             capabilities = mediaStreamTrack.getCapabilities();
             settings = mediaStreamTrack.getSettings();
 
-            outputTEST('* capabilities:' + capabilities);
-            for(key in capabilities){
-                outputTEST(key + ': ' + capabilities[key])
-            }
-            outputTEST('*');
+            outputTEST('* capabilities:' + JSON.stringify(capabilities, null , "\t"));
+//            for(key in capabilities){
+//                outputTEST(key + ': ' + capabilities[key])
+//            }
+            outputTEST('*-----*');
 
-            outputTEST('* settings:' + capabilities);
-            for(key in settings){
-                outputTEST(key + ': ' + settings[key])
-            }
-            outputTEST('*');
+            outputTEST('* settings:' + JSON.stringify(settings, null , "\t"));
+//            for(key in settings){
+//                outputTEST(key + ': ' + settings[key])
+//            }
+            outputTEST('*-----*');
 
             imageCapture = new ImageCapture(mediaStreamTrack);
             console.log(imageCapture);
-
+            
+            imageCapture.getPhotoCapabilities()
+            .then(function(photoCapabilities) {
+//                widthSlider.min = photoCapabilities.imageWidth.min;
+//                widthSlider.max = photoCapabilities.imageWidth.max;
+//                widthSlider.step = photoCapabilities.imageWidth.step
+                
+//                outputTEST('* photoCapabilities:' + JSON.stringify(photoCapabilities, null , "\t"));
+                outputTEST('* photoCapabilities:');
+                for(key in photoCapabilities){
+                    outputTEST(key + ': ' + photoCapabilities[key])
+                }
+                outputTEST('*-----*');
+                return imageCapture.getPhotoSettings();
+            })
+            .then(function(photoSettings) {
+//                widthSlider.value = photoSettings.imageWidth;
+                outputTEST('* photoSettings:' + JSON.stringify(photoSettings, null , "\t"));
+                outputTEST('*-----*');
+            })
+            .catch(error => console.error('Error getting camera capabilities and settings:', error));
+            
             // zoom
             var zoomSlider = document.getElementById('rangezoom');
             if (capabilities.zoom) {
@@ -154,13 +175,14 @@
         .then(imageBitmap => {
             const canvas = document.querySelector('#takePhotoCanvas');
             drawCanvas(canvas, imageBitmap);
+            outputTEST(`Photo size is ${imageBitmap.width}x${imageBitmap.height}`);
         })
         .catch(error => console.error('takePhoto() error:', error));
     }
 
 /* Utils */
     function outputTEST(msg) {
-        document.querySelector('#output').innerHTML += '<div>' + msg + '<div>';
+        document.querySelector('#output').innerHTML += '<pre>' + msg + '</pre>';
     }
     
     function sleep(ms = 0) {
