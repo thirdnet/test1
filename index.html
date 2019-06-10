@@ -185,8 +185,8 @@
                 }
             }
             // pointsOfInterest
-//            mediaStreamTrack.applyConstraints({advanced : [{pointsOfInterest: { x:0.5, y:0.5 }}]})
-//            .catch(error => outputTEST('pointsOfInterest error:' + error));
+            mediaStreamTrack.applyConstraints({advanced : [{pointsOfInterest: { x:0.0, y:0.0 }}]})
+            .catch(error => outputTEST('pointsOfInterest error:' + error));
             outputTEST('gotMedia end');
         })
         .catch(error => {
@@ -195,9 +195,9 @@
         outputTEST('getStream. end');
     }
     function onTakePhotoButtonClick() {
-//        imageCapture.takePhoto()
+       imageCapture.takePhoto()
         //imageCapture.takePhoto({imageWidth: 300})
-        imageCapture.takePhoto({ fillLightMode: 'flash' })   // flash
+        // imageCapture.takePhoto({ fillLightMode: 'flash' })   // flash
         .then(blob => createImageBitmap(blob))
         .then(imageBitmap => {
             const canvas = document.querySelector('#takePhotoCanvas');
